@@ -3,10 +3,6 @@ name: Multi-Job PR Failure Summary
 on:
   push
 
-permissions:
-  pull-requests: write
-  actions: read
-
 jobs:
   job1:
     name: Job 1
@@ -15,104 +11,9 @@ jobs:
       - name: Test1
         id: test1
         run: false
-        if: always()
       - name: Test2
         id: test2
         run: false  # This will fail
-        if: always()
       - name: Test3
         id: test3
-        if: always()
         run: echo "Test3"
-    outputs:
-      status: ${{ toJson(steps) }}
-
-  job2:
-    name: Job 2
-    runs-on: ubuntu-latest
-    steps:
-      - name: Test4
-        id: test4
-        run: echo "Test4"
-      - name: Test5
-        id: test5
-        run: echo "Test5"
-    outputs:
-      status: ${{ toJson(steps) }}
-
-  job3:
-    name: Job 3
-    runs-on: ubuntu-latest
-    steps:
-      - name: Test6
-        id: test6
-        run: false
-      - name: Test7
-        id: test7
-        if: always()
-        run: echo "Test7"
-    outputs:
-      status: ${{ toJson(steps) }}
-
-  summary:
-    name: Summary
-    needs: [job1, job2, job3]
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Collect Job Results
-        id: collect-results
-        run: |
-          echo "### Workflow Summary" > summary.txt
-          echo "" >> summary.txt
-          
-          # Function to extract step status
-          get_step_status() {
-            echo "$1" | jq -r --arg step "$2" '.[$step].outcome // "skipped"'
-          }
-          
-          # Capture results from Job 1
-          echo "## Job 1" >> summary.txt
-          job1_status='${{ needs.job1.outputs.status }}'
-          echo "- Test1: $(get_step_status "$job1_status" "test1")" >> summary.txt
-          echo "- Test2: $(get_step_status "$job1_status" "test2")" >> summary.txt
-          echo "- Test3: $(get_step_status "$job1_status" "test3")" >> summary.txt
-          echo "" >> summary.txt
-
-          # Capture results from Job 2
-          echo "## Job 2" >> summary.txt
-          job2_status='${{ needs.job2.outputs.status }}'
-          echo "- Test4: $(get_step_status "$job2_status" "test4")" >> summary.txt
-          echo "- Test5: $(get_step_status "$job2_status" "test5")" >> summary.txt
-          echo "" >> summary.txt
-
-          # Capture results from Job 3
-          echo "## Job 3" >> summary.txt
-          job3_status='${{ needs.job3.outputs.status }}'
-          echo "- Test6: $(get_step_status "$job3_status" "test6")" >> summary.txt
-          echo "- Test7: $(get_step_status "$job3_status" "test7")" >> summary.txt
-          echo "" >> summary.txt
-
-          cat summary.txt
-          echo "summary<<EOF" >> $GITHUB_OUTPUT
-          cat summary.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Create PR Comment
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const summary = fs.readFileSync('summary.txt', 'utf8');
-            
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: summary
-            });
-
-      - name: Print Summary
-        run: cat summary.txt
