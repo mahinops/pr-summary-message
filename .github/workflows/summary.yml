@@ -10,3 +10,12 @@ jobs:
     steps:
       - name: Summary
         run: echo "Summary"
+
+      - name: Test1
+        run: echo "Test1"
+
+      - name: Test2
+        run: false
+      
+      - name: Test3
+        run: echo "Test3"
