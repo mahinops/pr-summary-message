@@ -10,8 +10,8 @@ jobs:
     steps:
       - name: Get PR Number
         run: |
-          echo "PR Number: ${{ github.event.number }}"
-          echo "PR Name: ${{ github.event.pull_request.number }}"
+          echo "PR Number: ${{ github.event.pull_request.number }}"
+          echo "PR Title: ${{ github.event.pull_request.title }}"
       - name: Test1
         id: test1
         run: false
