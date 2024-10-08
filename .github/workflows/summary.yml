@@ -1,23 +1,23 @@
-name: Multi-Job PR Failure Summary
+name: PR Information Workflow
 
 on:
-  push
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 jobs:
   job1:
-    name: Job 1
+    name: Get PR Information
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Get PR Number
+
+      - name: Get PR Number and Title
         run: |
-          PR_NUMBER=$(gh pr view --json number --jq .number || echo "")
-          PR_TITLE=$(gh pr view --json title --jq .title || echo "")
-          echo "PR_NUMBER=$PR_NUMBER"
-          echo "PR_TITLE=$PR_TITLE"
-        env:
-          GH_TOKEN: ${{ github.token }}
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}"
+          echo "PR_TITLE=${{ github.event.pull_request.title }}"
+
       - name: Test1
         id: test1
         run: false
