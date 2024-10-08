@@ -18,8 +18,8 @@ jobs:
   job2:
     name: Test 2
     needs: [job1]
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: test2
-        if: success() || failure()
         run: true
