@@ -1,11 +1,7 @@
 name: PR Failure Summary
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push
 
 # Add permissions to the job
 permissions:
