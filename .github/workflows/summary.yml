@@ -13,10 +13,12 @@ jobs:
         run: false
       - name: Test2
         if: success() || failure()
+        continue-on-error: true
         id: test2
         run: false  # This will fail
       - name: Test3
         if: success() || failure()
+        continue-on-error: true
         id: test3
         run: echo "Test3"
   job2:
