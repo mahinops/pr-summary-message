@@ -19,3 +19,12 @@ jobs:
         if: success() || failure()
         id: test3
         run: echo "Test3"
+  job2:
+    name: Job 2
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test4
+        if: success() || failure()
+        id: test4
+        run: echo "Test4"
