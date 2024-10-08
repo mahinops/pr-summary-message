@@ -18,4 +18,5 @@ jobs:
         run: false
       
       - name: Test3
+        if: always()
         run: echo "Test3"
