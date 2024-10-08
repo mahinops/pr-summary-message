@@ -9,24 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       test1: ${{ steps.test1.conclusion }}
+      test2: ${{ steps.test2.conclusion }}
     steps:
       - name: test1
         if: success() || failure()
         id: test1
         run: false
-        
+      - name: test2
+        if: success() || failure()
+        id: test2
+        run: true
+
   job2:
     name: Test 2
     needs: [job1]
-    if: always()
+    if: ${{ needs.job1.outputs.test2_outcome == 'success' }} 
     runs-on: ubuntu-latest
     steps:
-      - name: Check job1 outcome and issue warning if failed
-        run: |
-          if [ "${{ needs.job1.outputs.test1 }}" == "failure" ]; then
-            echo "::warning::job1 failed, proceeding with job2."
-          else
-            echo "job1 succeeded."
-          fi
       - name: test2
         run: true
