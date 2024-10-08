@@ -1,69 +1,93 @@
-name: PR Failure Summary
+name: Multi-Job PR Failure Summary
 
 on:
   push
 
-# Add permissions to the job
 permissions:
   pull-requests: write
+  actions: read
 
 jobs:
-  summary:
+  job1:
+    name: Job 1
     runs-on: ubuntu-latest
     steps:
-      - name: Summary
-        run: echo "Summary"
-
       - name: Test1
         id: test1
         run: echo "Test1"
-
       - name: Test2
         id: test2
-        # continue-on-error: true
         run: false  # This will fail
-
       - name: Test3
         id: test3
         if: always()
         run: echo "Test3"
 
+  job2:
+    name: Job 2
+    runs-on: ubuntu-latest
+    steps:
       - name: Test4
         id: test4
-        if: always()
         run: echo "Test4"
-
       - name: Test5
+        id: test5
         run: echo "Test5"
 
-      - name: PR Summary Comment
-        if: github.event_name == 'pull_request' && always()
+  summary:
+    name: Summary
+    needs: [job1, job2]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Collect Job Results
         uses: actions/github-script@v6
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
+        id: collect-results
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const prNumber = context.payload.pull_request.number;
-            const stepsContext = JSON.parse(process.env.STEPS_CONTEXT);
+            const workflow_run = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId
+            });
             
-            // Function to get step result
-            const getStepResult = (stepId) => {
-              const step = stepsContext[stepId];
-              return step.outcome === 'success' ? 'passed' : 'failed';
-            };
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+              per_page: 100
+            });
             
-            // Create a comment summarizing the results
-            const comment = `### Workflow Summary\n
-            - **Test1**: ${getStepResult('test1')}\n
-            - **Test2**: ${getStepResult('test2')}\n
-            - **Test3**: ${getStepResult('test3')}\n
-            - **Test4**: ${getStepResult('test4')}\n`;
+            let summary = "### Workflow Summary\n\n";
             
-            // Create the comment on the PR
+            for (const job of jobs) {
+              summary += `## ${job.name}\n`;
+              summary += `Status: ${job.conclusion}\n\n`;
+              
+              for (const step of job.steps) {
+                summary += `- **${step.name}**: ${step.conclusion}\n`;
+              }
+              
+              summary += "\n";
+            }
+            
+            return summary;
+
+      - name: Create PR Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const summary = ${{ steps.collect-results.outputs.result }};
+            
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: prNumber,
-              body: comment,
+              issue_number: context.issue.number,
+              body: summary
             });
+
+      - name: Print Summary
+        run: echo "${{ steps.collect-results.outputs.result }}"
