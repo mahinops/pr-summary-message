@@ -1,7 +1,11 @@
 name: Multi-Job PR Failure Summary
 
 on:
-  push
+  push:
+    branches:
+      - main  # Adjust this to your main branch name if different
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
   pull-requests: write
