@@ -14,6 +14,8 @@ jobs:
           PR_TITLE=$(gh pr view --json title --jq .title || echo "")
           echo "PR_NUMBER=$PR_NUMBER"
           echo "PR_TITLE=$PR_TITLE"
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Test1
         id: test1
         run: false
