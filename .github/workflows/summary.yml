@@ -8,6 +8,10 @@ jobs:
     name: Job 1
     runs-on: ubuntu-latest
     steps:
+      - name: Get PR Number
+        run: |
+          echo "PR Number: ${{ github.event.number }}"
+          echo "PR Name: ${{ github.event.name }}"
       - name: Test1
         id: test1
         run: false
