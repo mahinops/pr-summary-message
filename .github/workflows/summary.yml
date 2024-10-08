@@ -13,6 +13,7 @@ jobs:
         run: false
   job2:
     name: Test 2
+    needs: [ job1 ]
     runs-on: ubuntu-latest
     steps:
       - name: test2
