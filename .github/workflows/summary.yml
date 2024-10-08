@@ -16,5 +16,6 @@ jobs:
         id: test2
         run: false  # This will fail
       - name: Test3
+        if: success() || failure()
         id: test3
         run: echo "Test3"
