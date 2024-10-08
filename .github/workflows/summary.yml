@@ -8,23 +8,24 @@ jobs:
     name: Test 1
     runs-on: ubuntu-latest
     outputs:
-      test1: ${{ steps.test1.conclusion }}
-      test2: ${{ steps.test2.conclusion }}
+      test1_outcome: ${{ steps.test1.outcome }}  # Correct property to capture outcome
+      test2_outcome: ${{ steps.test2.outcome }}
     steps:
       - name: test1
-        if: success() || failure()
+        if: success() || failure()  # Ensure this step runs regardless of previous results
         id: test1
-        run: false
+        run: exit 1  # Simulate failure for test1
+
       - name: test2
-        if: success() || failure()
+        if: success() || failure()  # Ensure this step runs regardless of test1 result
         id: test2
-        run: true
+        run: exit 0  # Simulate success for test2
 
   job2:
     name: Test 2
     needs: [job1]
-    if: ${{ needs.job1.outputs.test2_outcome == 'success' }} 
+    if: ${{ needs.job1.outputs.test2_outcome == 'success' }}  # Only run job2 if test2 in job1 was successful
     runs-on: ubuntu-latest
     steps:
-      - name: test2
-        run: true
+      - name: test3
+        run: echo "Running test3 because test2 from job1 passed!"
