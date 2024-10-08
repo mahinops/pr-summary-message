@@ -34,6 +34,17 @@ jobs:
         id: test5
         run: echo "Test5"
 
+  job3:
+    name: Job 3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test6
+        id: test6
+        run: false
+      - name: Test7
+        id: test7
+        run: echo "Test7"
+
   summary:
     name: Summary
     needs: [job1, job2]
