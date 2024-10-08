@@ -8,8 +8,8 @@ jobs:
     name: Test 1
     runs-on: ubuntu-latest
     outputs:
-      test1_status: ${{ steps.test1.outcome }}
-      test2_status: ${{ steps.test2.outcome }}
+      test1_status: ${{ steps.test1.conclusion }}
+      test2_status: ${{ steps.test2.conclusion }}
     steps:
       - name: test1
         id: test1
