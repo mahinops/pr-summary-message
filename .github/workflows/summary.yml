@@ -21,4 +21,5 @@ jobs:
         run: echo "Test3"
 
       - name: Test4
+        if: always()
         run: echo "Test4"
