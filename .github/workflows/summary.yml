@@ -8,6 +8,7 @@ jobs:
   job1:
     name: Test 1
     runs-on: ubuntu-latest
+    if: success() || failure()
     steps:
       - name: test1
         run: false
