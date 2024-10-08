@@ -21,5 +21,12 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: Check job1 outcome and issue warning if failed
+        run: |
+          if [ "${{ needs.job1.outputs.test1 }}" == "failure" ]; then
+            echo "::warning::job1 failed, proceeding with job2."
+          else
+            echo "job1 succeeded."
+          fi
       - name: test2
         run: true
