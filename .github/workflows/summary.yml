@@ -29,7 +29,7 @@ jobs:
         run: echo "Test4"
 
       - name: PR Summary Comment
-        if: github.event_name == 'pull_request'  # Only run for PR events
+        if: github.event_name == 'pull_request' && always() 
         uses: actions/github-script@v6
         with:
           script: |
