@@ -8,23 +8,28 @@ jobs:
     name: Test 1
     runs-on: ubuntu-latest
     outputs:
-      test1_conclusion: ${{ steps.test1.conclusion }}  # Correct output property
-      test2_conclusion: ${{ steps.test2.conclusion }}  # Correct output property
+      test1_status: ${{ steps.test1.outcome }}
+      test2_status: ${{ steps.test2.outcome }}
     steps:
       - name: test1
-        if: success() || failure()  # Ensure this step runs regardless of success or failure
         id: test1
         run: exit 1  # Simulate failure for test1
 
       - name: test2
-        if: success() || failure()  # Ensure this step runs regardless of test1 result
         id: test2
+        if: always()  # Ensure test2 runs regardless of test1's outcome
         run: exit 0  # Simulate success for test2
+
+      - name: Check test statuses
+        if: always()  # Ensure this step always runs for debugging
+        run: |
+          echo "Test1 status: ${{ steps.test1.outcome }}"
+          echo "Test2 status: ${{ steps.test2.outcome }}"
 
   job2:
     name: Test 2
-    needs: [job1]
-    if: ${{ needs.job1.outputs.test2_conclusion == 'success' }}  # Correct the output to use 'conclusion'
+    needs: job1
+    if: needs.job1.outputs.test2_status == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: test3
