@@ -1,7 +1,11 @@
 name: PR Failure Summary
 
 on:
-  push
+  push:
+    branches:
+      - main  # Specify the branch for push events
+  pull_request:
+    types: [opened, synchronize, reopened]  # Trigger on PR events
 
 jobs:
   summary:
@@ -14,8 +18,8 @@ jobs:
         run: echo "Test1"
 
       - name: Test2
-        run: false
-      
+        run: false  # This will fail
+
       - name: Test3
         if: always()
         run: echo "Test3"
@@ -29,8 +33,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const context = require('@actions/github').context;
-            const prNumber = context.payload.pull_request.number;
+            // Get the context directly without redeclaring it
+            const prNumber = github.context.payload.pull_request.number;
 
             // Check step results from the workflow
             const results = {
@@ -46,8 +50,9 @@ jobs:
             - **Test3**: ${results.Test3}\n
             - **Test4**: ${results.Test4}\n`;
 
+            // Create the comment on the PR
             await github.issues.createComment({
-              ...context.repo,
+              ...github.context.repo,
               issue_number: prNumber,
               body: comment,
             });
