@@ -3,9 +3,9 @@ name: PR Failure Summary
 on:
   push:
     branches:
-      - main  # Specify the branch for push events
+      - main
   pull_request:
-    types: [opened, synchronize, reopened]  # Trigger on PR events
+    types: [opened, synchronize, reopened]
 
 jobs:
   summary:
@@ -15,43 +15,51 @@ jobs:
         run: echo "Summary"
 
       - name: Test1
+        id: test1
         run: echo "Test1"
 
       - name: Test2
+        id: test2
+        continue-on-error: true
         run: false  # This will fail
 
       - name: Test3
+        id: test3
         if: always()
         run: echo "Test3"
 
       - name: Test4
+        id: test4
         if: always()
         run: echo "Test4"
 
       - name: PR Summary Comment
-        if: github.event_name == 'pull_request' && always() 
+        if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v6
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
         with:
           script: |
-            const prNumber = github.context.payload.pull_request.number;
-
-            // Check step results from the workflow
-            const results = {
-              Test2: 'failed',
-              Test3: 'passed',
-              Test4: 'passed',
+            const prNumber = context.payload.pull_request.number;
+            const stepsContext = JSON.parse(process.env.STEPS_CONTEXT);
+            
+            // Function to get step result
+            const getStepResult = (stepId) => {
+              const step = stepsContext[stepId];
+              return step.outcome === 'success' ? 'passed' : 'failed';
             };
-
+            
             // Create a comment summarizing the results
             const comment = `### Workflow Summary\n
-            - **Test1**: passed\n
-            - **Test2**: ${results.Test2}\n
-            - **Test3**: ${results.Test3}\n
-            - **Test4**: ${results.Test4}\n`;
-
+            - **Test1**: ${getStepResult('test1')}\n
+            - **Test2**: ${getStepResult('test2')}\n
+            - **Test3**: ${getStepResult('test3')}\n
+            - **Test4**: ${getStepResult('test4')}\n`;
+            
             // Create the comment on the PR
-            await github.issues.createComment({
-              ...github.context.repo,
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               issue_number: prNumber,
               body: comment,
             });
