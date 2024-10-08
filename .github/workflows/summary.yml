@@ -19,6 +19,7 @@ jobs:
       - name: Test2
         id: test2
         run: false  # This will fail
+        if: always()
       - name: Test3
         id: test3
         if: always()
