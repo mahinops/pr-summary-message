@@ -29,11 +29,10 @@ jobs:
         run: echo "Test4"
 
       - name: PR Summary Comment
-        if: always()  # Always run this step
+        if: github.event_name == 'pull_request'  # Only run for PR events
         uses: actions/github-script@v6
         with:
           script: |
-            // Get the context directly without redeclaring it
             const prNumber = github.context.payload.pull_request.number;
 
             // Check step results from the workflow
