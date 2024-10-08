@@ -24,13 +24,13 @@ jobs:
       - name: Check test statuses
         if: always()  # Ensure this step always runs for debugging
         run: |
-          echo "Test1 status: ${{ steps.test1.outcome }}"
-          echo "Test2 status: ${{ steps.test2.outcome }}"
+          echo "Test1 status: ${{ steps.test1.conclusion }}"
+          echo "Test2 status: ${{ steps.test2.conclusion }}"
 
   job2:
     name: Test 2
     needs: job1
-    if: always() && ${{ needs.job1.outputs.test2_status }} == 'success'
+    if: ${{ always() && needs.job1.outputs.test2_status == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: test3
