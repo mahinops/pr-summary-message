@@ -18,6 +18,7 @@ jobs:
         run: |
           echo "PR_NUMBER=${{ github.event.pull_request.number }}"
           echo "PR_TITLE=${{ github.event.pull_request.title }}"
+          echo "EVENT_TITLE=${{ github.event.number }}"
 
       - name: Test1
         id: test1
