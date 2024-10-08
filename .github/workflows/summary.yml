@@ -1,11 +1,7 @@
 name: Multi-Job PR Failure Summary
 
 on:
-  push:
-    branches:
-      - main  # Adjust this to your main branch name if different
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push
 
 permissions:
   pull-requests: write
@@ -18,7 +14,8 @@ jobs:
     steps:
       - name: Test1
         id: test1
-        run: echo "Test1"
+        run: false
+        if: always()
       - name: Test2
         id: test2
         run: false  # This will fail
