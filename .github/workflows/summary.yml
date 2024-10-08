@@ -23,3 +23,31 @@ jobs:
       - name: Test4
         if: always()
         run: echo "Test4"
+
+      - name: PR Summary Comment
+        if: always()  # Always run this step
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const context = require('@actions/github').context;
+            const prNumber = context.payload.pull_request.number;
+
+            // Check step results from the workflow
+            const results = {
+              Test2: 'failed',
+              Test3: 'passed',
+              Test4: 'passed',
+            };
+
+            // Create a comment summarizing the results
+            const comment = `### Workflow Summary\n
+            - **Test1**: passed\n
+            - **Test2**: ${results.Test2}\n
+            - **Test3**: ${results.Test3}\n
+            - **Test4**: ${results.Test4}\n`;
+
+            await github.issues.createComment({
+              ...context.repo,
+              issue_number: prNumber,
+              body: comment,
+            });
