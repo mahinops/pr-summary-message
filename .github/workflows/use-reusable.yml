@@ -1,0 +1,10 @@
+name: Use Reusable
+
+on:
+  push
+
+jobs:
+  use-reusable:
+    name: Use Reusable
+    uses: ./.github/workflows/summary.yml
+
