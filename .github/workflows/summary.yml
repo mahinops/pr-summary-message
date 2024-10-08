@@ -1,19 +1,19 @@
 name: PR Information Workflow
 
 on:
-  workflow_dispatch:
+  push
   
 
 jobs:
   job1:
-    name: Get PR Information
+    name: Test 1
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Get PR Number and Title
-        run: |
-          gh pr view --json number --jq '.number'
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+      - name: test1
+        run: false
+  job2:
+    name: Test 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: test2
+        run: true
