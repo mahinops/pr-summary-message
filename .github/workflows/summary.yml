@@ -24,7 +24,7 @@ jobs:
 
       - name: Test2
         id: test2
-        continue-on-error: true
+        # continue-on-error: true
         run: false  # This will fail
 
       - name: Test3
