@@ -8,6 +8,8 @@ jobs:
     name: Job 1
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
       - name: Get PR Number
         run: |
           PR_NUMBER=$(gh pr view --json number --jq .number || echo "")
@@ -15,7 +17,7 @@ jobs:
           echo "PR_NUMBER=$PR_NUMBER"
           echo "PR_TITLE=$PR_TITLE"
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.GITHUB_TOKEN }}
       - name: Test1
         id: test1
         run: false
@@ -29,13 +31,3 @@ jobs:
         continue-on-error: true
         id: test3
         run: echo "Test3"
-  job2:
-    name: Job 2
-    needs: job1
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Test4
-        if: success() || failure()
-        id: test4
-        run: echo "Test4"
