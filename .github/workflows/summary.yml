@@ -47,7 +47,7 @@ jobs:
 
   summary:
     name: Summary
-    needs: [job1, job2]
+    needs: [job1, job2, job3]
     runs-on: ubuntu-latest
     if: always()
     steps:
