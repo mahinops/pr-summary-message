@@ -14,20 +14,6 @@ jobs:
 
       - name: Get PR Number and Title
         run: |
-          echo "PR_NUMBER=${{ github.event.pull_request.number }}"
-          echo "PR_TITLE=${{ github.event.pull_request.title }}"
-          echo "EVENT_TITLE=${{ github.event.number }}"
-
-      - name: Test1
-        id: test1
-        run: false
-      - name: Test2
-        if: success() || failure()
-        continue-on-error: true
-        id: test2
-        run: false  # This will fail
-      - name: Test3
-        if: success() || failure()
-        continue-on-error: true
-        id: test3
-        run: echo "Test3"
+          gh pr view --json number --jq '.number'
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
