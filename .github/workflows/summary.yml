@@ -21,11 +21,6 @@ jobs:
         if: success() || failure()
         run: exit 0  # Simulate success for test2
 
-      - name: Check test statuses
-        if: always()  # Ensure this step always runs for debugging
-        run: |
-          echo "Test1 status: ${{ steps.test1.conclusion }}"
-          echo "Test2 status: ${{ steps.test2.conclusion }}"
 
   job2:
     name: Test 2
