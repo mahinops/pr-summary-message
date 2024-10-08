@@ -1,8 +1,7 @@
 name: PR Failure Summary
 
 on:
-  workflow_dispatch:
-
+  push
 
 jobs:
   summary:
