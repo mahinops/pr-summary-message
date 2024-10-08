@@ -37,6 +37,9 @@ jobs:
         if: always()
         run: echo "Test4"
 
+      - name: Test5
+        run: echo "Test5"
+
       - name: PR Summary Comment
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v6
