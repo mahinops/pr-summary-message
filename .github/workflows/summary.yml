@@ -7,6 +7,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+# Add permissions to the job
+permissions:
+  pull-requests: write
+
 jobs:
   summary:
     runs-on: ubuntu-latest
@@ -39,6 +43,7 @@ jobs:
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.payload.pull_request.number;
             const stepsContext = JSON.parse(process.env.STEPS_CONTEXT);
