@@ -1,7 +1,11 @@
 name: Multi-Job PR Failure Summary
 
 on:
-  push
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
   pull-requests: write
@@ -52,38 +56,32 @@ jobs:
     if: always()
     steps:
       - name: Collect Job Results
-        uses: actions/github-script@v6
         id: collect-results
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const workflow_run = await github.rest.actions.getWorkflowRun({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId
-            });
-            
-            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId,
-              per_page: 100
-            });
-            
-            let summary = "### Workflow Summary\n\n";
-            
-            for (const job of jobs) {
-              summary += `## ${job.name}\n`;
-              summary += `Status: ${job.conclusion}\n\n`;
-              
-              for (const step of job.steps) {
-                summary += `- **${step.name}**: ${step.conclusion}\n`;
-              }
-              
-              summary += "\n";
-            }
-            
-            return summary;
+        run: |
+          echo "### Workflow Summary" > summary.txt
+          echo "" >> summary.txt
+          
+          # Capture results from Job 1
+          echo "## Job 1" >> summary.txt
+          echo "- Test1: ${{ needs.job1.outputs.test1.outcome }}" >> summary.txt
+          echo "- Test2: ${{ needs.job1.outputs.test2.outcome }}" >> summary.txt
+          echo "- Test3: ${{ needs.job1.outputs.test3.outcome }}" >> summary.txt
+          echo "" >> summary.txt
+
+          # Capture results from Job 2
+          echo "## Job 2" >> summary.txt
+          echo "- Test4: ${{ needs.job2.outputs.test4.outcome }}" >> summary.txt
+          echo "- Test5: ${{ needs.job2.outputs.test5.outcome }}" >> summary.txt
+          echo "" >> summary.txt
+
+          # Capture results from Job 3
+          echo "## Job 3" >> summary.txt
+          echo "- Test6: ${{ needs.job3.outputs.test6.outcome }}" >> summary.txt
+          echo "- Test7: ${{ needs.job3.outputs.test7.outcome }}" >> summary.txt
+          echo "" >> summary.txt
+
+          cat summary.txt
+          echo "::set-output name=result::$(cat summary.txt)"
 
       - name: Create PR Comment
         if: github.event_name == 'pull_request'
@@ -91,12 +89,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const summary = ${{ steps.collect-results.outputs.result }};
+            const issue_number = context.payload.pull_request.number;
+            const summary = `### Workflow Summary\n\n${{ steps.collect-results.outputs.result }}`;
             
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: issue_number,
               body: summary
             });
 
