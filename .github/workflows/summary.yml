@@ -1,0 +1,12 @@
+name: PR Failure Summary
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: echo "Summary"
