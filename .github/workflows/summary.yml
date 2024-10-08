@@ -21,4 +21,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: test2
+        if: success() || failure()
         run: true
