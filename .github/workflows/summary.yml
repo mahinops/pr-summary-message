@@ -12,6 +12,7 @@ jobs:
         id: test1
         run: false
       - name: Test2
+        if: success() || failure()
         id: test2
         run: false  # This will fail
       - name: Test3
