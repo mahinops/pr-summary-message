@@ -1,0 +1,20 @@
+# .github/workflows/wd-input.yml
+
+name: Hello World Workflow
+run-name: wd-input running from ${{ github.ref_name }} branch
+
+# This enables the workflow to be triggered manually via the API or GitHub UI
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Enter your name'
+        required: true
+        default: 'World'
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Hello World
+        run: echo "Hello, ${{ github.event.inputs.name }}!"

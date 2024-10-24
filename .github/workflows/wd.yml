@@ -1,7 +1,7 @@
-# .github/workflows/hello-world.yml
+# .github/workflows/wd.yml
 
 name: Hello World Workflow
-run-name: Workflow running from ${{ github.ref_name }} branch
+run-name: wd running from ${{ github.ref_name }} branch
 
 # This enables the workflow to be triggered manually via the API or GitHub UI
 on:

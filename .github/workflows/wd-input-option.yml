@@ -1,0 +1,26 @@
+# .github/workflows/wd-input-option.yml
+
+name: Hello World Workflow
+run-name: wd-input-option running from ${{ github.ref_name }} branch
+
+# This enables the workflow to be triggered manually via the API or GitHub UI
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: 'Select your name'
+        required: true
+        default: 'Alice'
+        options:
+          - Alice
+          - Bob
+          - Charlie
+          - World
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Hello
+        run: echo "Hello, ${{ github.event.inputs.name }}!"
