@@ -1,7 +1,7 @@
 # .github/workflows/wd-input.yml
 
-name: Hello World Workflow
-run-name: wd-input running from ${{ github.ref_name }} branch
+name: Workflow Dispatch Input Example
+run-name: Workflow Dispatch Input running from ${{ github.ref_name }} branch
 
 # This enables the workflow to be triggered manually via the API or GitHub UI
 on:
