@@ -1,22 +1,32 @@
-name: PR Failure Summary
+name: PR Information Workflow
 
 on:
-  workflow_dispatch:
-
+  push
 
 jobs:
-  summary:
+  job1:
+    name: Test 1
+    runs-on: ubuntu-latest
+    outputs:
+      test1_status: ${{ steps.test1.conclusion }}
+      test2_status: ${{ steps.test2.conclusion }}
+    steps:
+      - name: test1
+        id: test1
+        if: success() || failure()
+        run: exit 1  # Simulate failure for test1
+
+      - name: test2
+        id: test2
+        if: success() || failure()
+        run: exit 0  # Simulate success for test2
+
+
+  job2:
+    name: Test 2
+    needs: job1
+    if: ${{ always() && needs.job1.outputs.test2_status == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Summary
-        run: echo "Summary"
-
-      - name: Test1
-        run: echo "Test1"
-
-      - name: Test2
-        run: false
-      
-      - name: Test3
-        if: always()
-        run: echo "Test3"
+      - name: test3
+        run: echo "Running test3 because test2 from job1 passed!"
