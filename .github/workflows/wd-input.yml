@@ -16,5 +16,5 @@ jobs:
   say-hello:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo Hello World
+      - name: Greet Name
         run: echo "Hello, ${{ github.event.inputs.name }}!"
